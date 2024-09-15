@@ -1,5 +1,17 @@
 describe('reqresApi Test', () => {
+    const neatCSV = require('neat-csv');
+    let data;
+
     const baseURL = "https://reqres.in";
+
+    before("data dravin",()=>{
+        cy.fixture("data.csv")
+        .then(neatCSV)
+        .then((response)=>{
+            data = response;
+        })
+    })
+
     it('GetStatus', () => {
         cy.request({
             method:'GET',
@@ -85,13 +97,15 @@ describe('reqresApi Test', () => {
         })
     });
 
-    it('Create Post', () => {
+    it.only('Create Post', () => {
+       cy.wrap(data).each((ele)=>{
+
         cy.request({
             method:"POST",
             url:baseURL+'/api/users',
             body:{
-                "name": "morpheus",
-                "job": "leader"
+                "name": ele.name,
+                "job": ele.job
             },
             header:{
                 'content-Type':'application/json'
@@ -103,6 +117,7 @@ describe('reqresApi Test', () => {
             cy.log(bbody)
         })
     });
+    })
 
     it('update', () => {
         cy.request({
